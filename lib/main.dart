@@ -12,7 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => DiscoverProvider())],
+      providers: [
+        // [..] cascade operator.
+        ChangeNotifierProvider(
+            lazy: false, // To forze the first load when this code is executed.
+            create: (_) => DiscoverProvider()..loadNextPage())
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: const DiscoverScreen(),
