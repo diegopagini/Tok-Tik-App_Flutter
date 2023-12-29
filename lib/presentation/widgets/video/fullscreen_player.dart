@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tok_tik/presentation/widgets/video/video_background.dart';
 import 'package:video_player/video_player.dart';
 
 /// [StatelessWidget] don't have life cycle
@@ -50,9 +51,35 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
           );
         }
 
-        return AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: VideoPlayer(controller),
+        // Video
+        return GestureDetector(
+          onTap: () {
+            // Try to avoid the else.
+            if (controller.value.isPlaying) {
+              controller.pause();
+              return;
+            }
+
+            controller.play();
+          },
+          child: AspectRatio(
+            aspectRatio: controller.value.aspectRatio,
+            child: Stack(
+              children: [
+                // Video
+                VideoPlayer(controller),
+                // Gradient
+                VideoBackground(
+                  stops: const [0.8, 1.0],
+                ),
+                // Text
+                Positioned(
+                    bottom: 50,
+                    left: 20,
+                    child: _VideoCaption(caption: widget.caption))
+              ],
+            ),
+          ),
         );
       },
     );
@@ -65,5 +92,26 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
     controller.dispose();
 
     super.dispose();
+  }
+}
+
+class _VideoCaption extends StatelessWidget {
+  final String caption;
+
+  const _VideoCaption({required this.caption});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final titleStyle = Theme.of(context).textTheme.titleLarge;
+
+    return SizedBox(
+      width: size.width * 0.6,
+      child: Text(
+        caption,
+        maxLines: 2,
+        style: titleStyle,
+      ),
+    );
   }
 }
